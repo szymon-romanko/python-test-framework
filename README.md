@@ -1,9 +1,11 @@
 # Codewars Test Framework for Python
 
+###### Fork focused on making it usable in local development (minor changes)
+
 ### Installation
 
 ```bash
-pip install git+https://github.com/codewars/python-test-framework.git#egg=codewars_test
+pip install git+https://github.com/szymon-romanko/python-test-framework.git#egg=codewars_test
 ```
 
 ### Basic Example

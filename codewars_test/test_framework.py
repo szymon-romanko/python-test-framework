@@ -1,17 +1,41 @@
 from __future__ import print_function
 
 
+class bcolors:  # thanks to https://stackoverflow.com/questions/287871/how-do-i-print-colored-text-to-the-terminal
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 class AssertException(Exception):
     pass
 
 
 def format_message(message):
-    return message.replace("\n", "<:LF:>")
+    # return message.replace("\n", "<:LF:>")
+    return message
 
 
 def display(type, message, label="", mode=""):
-    print("\n<{0}:{1}:{2}>{3}".format(
-        type.upper(), mode.upper(), label, format_message(message))
+    if type == "PASSED":
+        color = bcolors.OKGREEN
+    elif type == "FAILED":
+        color = bcolors.WARNING
+    elif type == "ERROR":
+        color = bcolors.FAIL
+    elif type == "COMPLETEDIN":
+        color = bcolors.OKCYAN
+    else:
+        color = bcolors.UNDERLINE
+
+    print("\n{4}<{0}:{1}:{2}>{3}{5}".format(
+        type.upper(), mode.upper(), label, format_message(message), color, bcolors.ENDC)
         , flush=True)
 
 
@@ -119,13 +143,14 @@ def _timed_block_factory(opening_text):
             display('COMPLETEDIN', '{:.2f}'.format((timer() - time) * 1000))
             if callable(after):
                 after()
+
         return wrapper
+
     return _timed_block_decorator
 
 
 describe = _timed_block_factory('DESCRIBE')
 it = _timed_block_factory('IT')
-
 
 '''
 Timeout utility
@@ -144,6 +169,7 @@ def timeout(sec):
 
         def wrapped():
             expect_no_error(msg, func)
+
         process = Process(target=wrapped)
         process.start()
         process.join(sec)
@@ -151,4 +177,5 @@ def timeout(sec):
             fail('Exceeded time limit of {:.3f} seconds'.format(sec))
             process.terminate()
             process.join()
+
     return wrapper
